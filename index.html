@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ian Letechipia | ECE Student @ OSU</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> 
+    <style>
+        /* --- VARIABLES & RESET --- */
+        :root {
+            --bg-color: #0f0f11;
+            --card-bg: #1a1a1d;
+            --text-main: #ffffff;
+            --text-muted: #a1a1aa;
+            --accent: #ce0f3d; /* OSU Scarlet */
+            --accent-hover: #e61b4d;
+            --font-main: 'Inter', sans-serif;
+            --radius: 8px;
+            --transition: all 0.2s ease-in-out;
+            --container-width: 1000px;
+            --section-spacing: 6rem;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative; /* Needed for z-index layering */
+        }
+
+        a { text-decoration: none; color: inherit; transition: var(--transition); }
+        ul { list-style: none; }
+
+        /* --- BACKGROUND SHARDS ANIMATION --- */
+        .shards-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1; /* Behind everything */
+            pointer-events: none; /* Let clicks pass through */
+        }
+
+        .shard {
+            position: absolute;
+            background: linear-gradient(135deg, rgba(206, 15, 61, 0.1), rgba(206, 15, 61, 0));
+            backdrop-filter: blur(2px);
+            border: 1px solid rgba(206, 15, 61, 0.1);
+            opacity: 0.6;
+        }
+
+        /* Specific Shapes */
+        .s1 {
+            width: 300px; height: 300px;
+            top: -50px; left: -50px;
+            clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+            animation: floatRotate 20s infinite linear;
+        }
+        .s2 {
+            width: 200px; height: 200px;
+            top: 40%; right: -50px;
+            clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
+            animation: floatRotate 25s infinite reverse linear;
+        }
+        .s3 {
+            width: 150px; height: 150px;
+            bottom: 10%; left: 20%;
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            animation: floatUp 18s infinite ease-in-out;
+        }
+        .s4 {
+            width: 100px; height: 100px;
+            top: 20%; right: 30%;
+            background: transparent;
+            border: 2px solid rgba(255, 255, 255, 0.05);
+            clip-path: polygon(0 0, 100% 0, 100% 100%);
+            animation: floatRotate 30s infinite linear;
+        }
+        .s5 {
+            width: 250px; height: 250px;
+            bottom: -50px; right: 10%;
+            clip-path: polygon(10% 0, 100% 0%, 75% 100%, 0% 100%);
+            opacity: 0.3;
+            animation: floatRotate 35s infinite linear;
+        }
+
+        /* Animations */
+        @keyframes floatRotate {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(20px, 40px) rotate(180deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+        @keyframes floatUp {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-40px) rotate(10deg); }
+        }
+
+        /* --- TYPOGRAPHY --- */
+        h1, h2, h3 { color: #fff; font-weight: 700; line-height: 1.2; }
+        h1 { font-size: 2.75rem; letter-spacing: -1px; margin-bottom: 1rem; }
+        h2 { font-size: 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px; }
+        h2::before { content: ""; display: block; width: 6px; height: 24px; background: var(--accent); border-radius: 2px; }
+        h3 { font-size: 1.1rem; margin-bottom: 0.5rem; }
+        
+        p { color: var(--text-muted); margin-bottom: 1rem; font-size: 1rem; }
+        .highlight { color: var(--accent); }
+
+        /* --- UTILITIES --- */
+        .container { max-width: var(--container-width); margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            background: var(--accent);
+            color: white;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border: 1px solid var(--accent);
+            cursor: pointer;
+        }
+        .btn:hover { background: var(--accent-hover); transform: translateY(-2px); }
+        
+        .btn-outline {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            background: transparent;
+            border: 1px solid #333;
+            color: var(--text-main);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            backdrop-filter: blur(5px); /* Makes text readable over shards */
+        }
+        .btn-outline:hover { border-color: var(--accent); color: var(--accent); background: rgba(206, 15, 61, 0.05); }
+
+        /* --- NAVIGATION --- */
+        nav {
+            position: sticky;
+            top: 0;
+            background: rgba(15, 15, 17, 0.95);
+            backdrop-filter: blur(12px);
+            z-index: 1000;
+            border-bottom: 1px solid #27272a;
+            padding: 1.2rem 0;
+        }
+        .nav-content { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-weight: 700; font-size: 1.25rem; letter-spacing: -0.5px; }
+        .nav-links { display: flex; gap: 2rem; }
+        .nav-links a { font-size: 0.95rem; color: var(--text-muted); font-weight: 500; }
+        .nav-links a:hover { color: var(--text-main); }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            padding: 6rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 4rem;
+            min-height: 80vh;
+        }
+        .hero-text { flex: 1; max-width: 550px; }
+        .hero-tag {
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-size: 0.8rem;
+            color: var(--accent);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+            background: rgba(206, 15, 61, 0.1);
+            padding: 6px 12px;
+            border-radius: 4px;
+        }
+        .hero-sub { font-size: 1.15rem; color: var(--text-muted); margin-bottom: 2.5rem; max-width: 90%; }
+        .hero-btns { display: flex; gap: 1rem; }
+        
+        .hero-image-container { flex-shrink: 0; }
+        .hero-image {
+            width: 320px;
+            height: 320px;
+            object-fit: cover;
+            border-radius: 16px;
+            border: 1px solid #333;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            display: block;
+        }
+
+        /* --- SKILLS STRIP --- */
+        .skills-section { margin-bottom: var(--section-spacing); }
+        .skills-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+        }
+        .skill-tag {
+            background: rgba(24, 24, 27, 0.8); /* Slight transparency */
+            backdrop-filter: blur(5px);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            color: #d4d4d8;
+            border: 1px solid #27272a;
+            font-weight: 500;
+        }
+        .skill-tag span { color: var(--accent); margin-right: 6px; }
+
+        /* --- PROJECTS --- */
+        #projects { margin-bottom: var(--section-spacing); }
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+        .project-card {
+            background: rgba(26, 26, 29, 0.8); /* Slight transparency for shards effect */
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius);
+            padding: 2rem;
+            border: 1px solid #27272a;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+        }
+        .project-card:hover { transform: translateY(-4px); border-color: #3f3f46; }
+        .tech-stack { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 1rem; display: flex; gap: 8px; flex-wrap: wrap;}
+        .tech-item { 
+            background: #27272a; 
+            padding: 4px 8px; 
+            border-radius: 4px; 
+            text-transform: uppercase; 
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        /* --- STATUS SECTION --- */
+        .status-section { margin-bottom: var(--section-spacing); }
+        .status-card {
+            background: rgba(24, 24, 27, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid #27272a;
+            border-radius: var(--radius);
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2rem;
+        }
+        .status-label {
+            display: inline-block;
+            background: rgba(206, 15, 61, 0.15);
+            color: var(--accent);
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            letter-spacing: 1px;
+        }
+
+        /* --- ABOUT / RESUME --- */
+        .about-section { margin-bottom: var(--section-spacing); }
+        .resume-container {
+            margin-top: 2rem;
+            background: rgba(24, 24, 27, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid #27272a;
+            border-radius: var(--radius);
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .resume-text h3 { margin: 0; }
+        .resume-text p { margin: 0; font-size: 0.9rem; }
+
+        /* --- FOOTER --- */
+        footer {
+            text-align: center;
+            padding: 5rem 0;
+            border-top: 1px solid #27272a;
+            background: #0a0a0b;
+            position: relative; 
+            z-index: 2;
+        }
+        .socials { display: flex; justify-content: center; gap: 2rem; margin-top: 2rem; }
+        .socials a { font-size: 1.4rem; color: var(--text-muted); transition: var(--transition); }
+        .socials a:hover { color: #fff; }
+
+        /* --- IMAGE MODAL (POPUP) STYLES --- */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 2000; 
+            padding-top: 50px; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.9); 
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            margin: auto;
+            display: block;
+            width: 80%;
+            max-width: 1000px;
+            border-radius: 8px;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+            animation-name: zoom;
+            animation-duration: 0.3s;
+        }
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+            z-index: 2001;
+        }
+        .close:hover, .close:focus {
+            color: var(--accent);
+            text-decoration: none;
+            cursor: pointer;
+        }
+        @keyframes zoom {
+            from {transform:scale(0.8); opacity: 0;} 
+            to {transform:scale(1); opacity: 1;}
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .hero { flex-direction: column-reverse; padding: 4rem 0; gap: 2rem; text-align: left; }
+            .hero-image { width: 100%; max-width: 300px; height: auto; aspect-ratio: 1/1; margin: 0; }
+            .hero-btns { flex-direction: column; }
+            .btn { width: 100%; }
+            .status-card { flex-direction: column; align-items: flex-start; gap: 1rem; }
+            .resume-container { flex-direction: column; text-align: center; gap: 1.5rem; }
+            .nav-links { display: none; }
+            .modal-content { width: 95%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="shards-container">
+        <div class="shard s1"></div>
+        <div class="shard s2"></div>
+        <div class="shard s3"></div>
+        <div class="shard s4"></div>
+        <div class="shard s5"></div>
+    </div>
+
+    <nav>
+        <div class="container nav-content">
+            <a href="#" class="logo">Ian<span class="highlight">.ece</span></a>
+            <div class="nav-links">
+                <a href="#projects">Work</a>
+                <a href="#about">About</a>
+                <a href="#contact">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="container hero">
+        <div class="hero-text">
+            <span class="hero-tag">Electrical & Computer Engineering</span>
+            <h1>Hi, I'm Ian Letechipia.</h1>
+            <p class="hero-sub">I’m an Electrical and Computer Engineering student at <span class="highlight">The Ohio State University</span> with interests in Machine Learning, Artificial Intelligence, and computer systems. I’m passionate about exploring how technology can simplify and enhance everyday life through smarter computing solutions.</p>
+            <div class="hero-btns">
+                <a href="Ian Resume 2.pdf" download class="btn">Download Resume</a>
+                <a href="#projects" class="btn-outline">View Projects</a>
+            </div>
+        </div>
+        <div class="hero-image-container">
+            <img src="profile.jpg" alt="Ian Letechipia" class="hero-image">
+        </div>
+    </header>
+
+    <section class="container skills-section">
+        <div class="skills-row">
+            <div class="skill-tag"><span>&#9889;</span> MATLAB</div>
+            <div class="skill-tag"><span>&#9889;</span> Python</div>
+            <div class="skill-tag"><span>&#9889;</span> C++</div>
+            <div class="skill-tag"><span>&#9889;</span> SOLIDWORKS</div>
+            <div class="skill-tag"><span>&#9889;</span> JavaScript</div>
+            <div class="skill-tag"><span>&#128188;</span> Under Armour Exp.</div> 
+            <div class="skill-tag"><span>&#127891;</span> Honda-OSU Scholar</div>
+        </div>
+    </section>
+
+    <section id="projects" class="container">
+        <h2>Featured Projects</h2>
+        <div class="projects-grid">
+            
+            <div class="project-card">
+                <div>
+                    <div class="tech-stack">
+                        <span class="tech-item">MATLAB</span>
+                        <span class="tech-item">Game Logic</span>
+                    </div>
+                    <h3>Battleship Math Game</h3>
+                    <p>Designed a kid-friendly Battleship game. Built a tile-based graphics engine on a 10x10 grid with CPU opponent logic and animations.</p>
+                </div>
+                <div style="margin-top: 1.5rem;">
+                    <a href="https://github.com/IanL1COMPENG/Battleship-Math-Game-ENGR-1181-Software-Design-Project" target="_blank" class="btn-outline" style="width: 100%">View Repo</a>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <div>
+                    <div class="tech-stack">
+                        <span class="tech-item">Python</span>
+                        <span class="tech-item">HTML</span>
+                        <span class="tech-item">Hackathon</span>
+                    </div>
+                    <h3>OSU Gym Time Predictor</h3>
+                    <p>Web app predicting gym crowd levels. Modeled 3000+ simulated swipes to estimate peak hours during Hack OHI/O 2025.</p>
+                </div>
+                <div style="margin-top: 1.5rem;">
+                    <a href="https://github.com/Aarav567/HackProject1" target="_blank" class="btn-outline" style="width: 100%">View Repo</a>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <div>
+                    <div class="tech-stack">
+                        <span class="tech-item">Content Strategy</span>
+                        <span class="tech-item">Video Editing</span>
+                    </div>
+                    <h3>YouTube Growth Strategy</h3>
+                    <p>Scaled a channel to 1.89M subscribers. Optimized algorithms, generated $29k+ in revenue, and analyzed audience data.</p>
+                </div>
+                <div style="margin-top: 1.5rem;">
+                    <button class="btn-outline" onclick="openModal()" style="width: 100%; cursor: pointer;">
+                        View Private Analytics
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="container status-section">
+        <h2>Current Focus</h2>
+        <div class="status-card">
+            <div style="max-width: 600px;">
+                <span class="status-label">IN PROGRESS</span>
+                <h3>Personal Portfolio V1</h3>
+                <p style="margin-bottom: 0;">Learning modern web development (HTML/CSS) to showcase engineering projects. Focusing on responsive design, clean UI, and professional presentation.</p>
+            </div>
+            <div style="font-size: 2rem; color: #333;">
+                <i class="fas fa-code"></i>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="container about-section">
+        <h2>About Me</h2>
+        <p style="max-width: 700px;">I am a freshman Electrical and Computer Engineering student at <strong>The Ohio State University</strong> with a 3.65 GPA. I bridge the gap between technical engineering and creative digital media. From coding game logic in MATLAB to analyzing audience data for a 1.8M subscriber YouTube channel, I love building things that people interact with.</p>
+        
+        <div class="resume-container">
+            <div class="resume-text">
+                <h3>Resume</h3>
+                <p>View my full academic and professional history.</p>
+            </div>
+            <a href="Ian Resume 2.pdf" download class="btn">Download Full PDF</a>
+        </div>
+    </section>
+
+    <footer id="contact">
+        <div class="container">
+            <h2 style="justify-content: center;">Let's Connect</h2>
+            <p>Open to internships and engineering collaborations.</p>
+            <a href="mailto:letechipia.1@buckeyemail.osu.edu" class="btn" style="margin-top: 1rem;">Email Me</a>
+            
+            <div class="socials">
+                <a href="https://www.linkedin.com/in/ian-letechipia" target="_blank" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <a href="https://github.com/IanL1COMPENG" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
+            </div>
+            <p style="margin-top: 3rem; font-size: 0.8rem; opacity: 0.3;">&copy; 2026 Ian Letechipia.</p>
+        </div>
+    </footer>
+
+    <div id="analyticsModal" class="modal">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <img class="modal-content" src="1752418475969.jpg" alt="Channel Analytics Dashboard">
+    </div>
+
+    <script>
+        // Get the modal
+        var modal = document.getElementById("analyticsModal");
+
+        // Function to open the modal
+        function openModal() {
+            modal.style.display = "flex";
+        }
+
+        // Function to close the modal
+        function closeModal() {
+            modal.style.display = "none";
+        }
+
+        // Close the modal if the user clicks anywhere outside the image
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+
+</body>
+</html>
